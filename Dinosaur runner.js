@@ -65,6 +65,7 @@ const ground = 300
 const canvasWidth = 700
 const canvasHeigh = 400
 const dinosaurRunner = new dinosaur()
+
 window.onload = function () {
     const canvas = document.getElementById("canvas")
     const ctx = canvas.getContext("2d")
