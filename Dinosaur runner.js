@@ -81,8 +81,6 @@ function addEvent() {
     const ctx = canvas.getContext("2d")
     window.addEventListener("keydown", keydownHandler)
     window.addEventListener("keyup", keyupHandler)
-     window.addEventListener("touchstart", keydownHandler)
-    window.addEventListener("touchend", keyupHandler)
 }
 
 let jump = false
@@ -107,23 +105,12 @@ function keydownHandler(event) {
         start = true
         jumpAnimationId = requestAnimationFrame(jumpDinosaur)
     }
-    if(event.touches){
-        jump = true
-        if (start == false) {
-            legIntervalId = setInterval(moveLegs, 100)
-            start = true
-            jumpAnimationId = requestAnimationFrame(jumpDinosaur)
-        }
-    }
 }
 
 function keyupHandler(event) {
     if (event.keyCode === space || event.keyCode === arrowUp) {
         jump = false
     }
-     if(event.touches){
-        jump = true
-     }
 }
 
 let lastTime = null
