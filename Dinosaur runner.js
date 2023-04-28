@@ -81,6 +81,7 @@ function addEvent() {
     const ctx = canvas.getContext("2d")
     window.addEventListener("keydown", keydownHandler)
     window.addEventListener("keyup", keyupHandler)
+     window.addEventListener("click", keydownHandler)
 }
 
 let jump = false
