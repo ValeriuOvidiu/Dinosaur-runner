@@ -1,5 +1,5 @@
-const landWalking=280
-const jumpingSpeed=70
+const landWalking = 280
+const jumpingSpeed = 70
 class dinosaur {
     constructor() {
         this.x = 75
@@ -65,16 +65,46 @@ const ground = 300
 const canvasWidth = 700
 const canvasHeigh = 400
 const dinosaurRunner = new dinosaur()
-
 window.onload = function () {
+    meniu("Start")
+}
+function play(event) {
+    if (event.offsetX < 450 && event.offsetX > 250 && event.offsetY < 350 && event.offsetY > 250) {
+        const canvas = document.getElementById("canvas")
+        const ctx = canvas.getContext("2d")
+        ctx.clearRect(0, 0, canvasWidth, canvasHeigh)
+        dinosaurRunner.draw(ctx)
+        ctx.lineWidth = 1
+        ctx.moveTo(0, ground)
+        ctx.lineTo(canvasWidth, ground)
+        ctx.stroke();
+        addEvent()
+        canvas.removeEventListener("click", play)
+    }
+}
+
+function meniu(buttonValue) {
     const canvas = document.getElementById("canvas")
     const ctx = canvas.getContext("2d")
-    dinosaurRunner.draw(ctx)
-    ctx.lineWidth = 1
-    ctx.moveTo(0, ground)
-    ctx.lineTo(canvasWidth, ground)
-    ctx.stroke();
-    addEvent()
+    ctx.fillStyle = "blue"
+    ctx.fillRect(100, 0, 500, canvasHeigh)
+    ctx.fillStyle = "green"
+    ctx.fillRect(250, 250, 200, 100)
+    ctx.fillStyle = "red"
+    ctx.textAlign = "center"
+    ctx.textBaseline = "alphabetic"
+    ctx.font = "50px serif"
+    ctx.fillText(buttonValue, 350, 320)
+    if (buttonValue == "Start") {
+        ctx.font = "30px serif"
+        ctx.fillText("Use ArrowUp and spacebar to jump", 350, 100);
+        ctx.fillText("Press the Start button to start the game", 350, 230)
+        canvas.addEventListener("click", play)
+    } else {
+        ctx.fillText("Score: " + score, 350, 230)
+        canvas.addEventListener("click", restart)
+    }
+
 }
 
 function addEvent() {
@@ -183,8 +213,7 @@ function drawObstacles(currentTime) {
         obstacles[i].x -= distance
         obstacles[i].draw(ctx)
         for (let j = 0; j < obstacles[i].lenght; ++j) {
-            if (dinosaurRunner.x < obstacles[i].x + 30 * obstacles[i].lenght && dinosaurRunner.x > obstacles[i].x && dinosaurRunner.y + 20 > obstacles[i].y - 20 * obstacles[i].heigh ||
-                dinosaurRunner.x + 18 < obstacles[i].x + 30 * obstacles[i].lenght && dinosaurRunner.x + 18 > obstacles[i].x && dinosaurRunner.y > obstacles[i].y - 20 * obstacles[i].heigh) {
+            if (collide(obstacles[i])) {
                 gameOver()
                 return
             }
@@ -202,7 +231,9 @@ function drawObstacles(currentTime) {
     }
     timeMeasure = currentTime
 }
+
 let moreSpeed = 1
+
 function newObstacles() {
     finish = 1
     begin = 0
@@ -214,6 +245,14 @@ function newObstacles() {
     ++moreSpeed
 }
 
+function collide(currentObstacle) {
+    if (dinosaurRunner.x < currentObstacle.x + 30 * currentObstacle.lenght && dinosaurRunner.x > currentObstacle.x && dinosaurRunner.y + 20 > currentObstacle.y - 20 * currentObstacle.heigh ||
+        dinosaurRunner.x + 18 < currentObstacle.x + 30 * currentObstacle.lenght && dinosaurRunner.x + 18 > currentObstacle.x && dinosaurRunner.y > currentObstacle.y - 20 * currentObstacle.heigh) {
+        return true
+    }
+    return false
+}
+
 function gameOver() {
     const canvas = document.getElementById("canvas")
     const ctx = canvas.getContext("2d")
@@ -222,31 +261,36 @@ function gameOver() {
     clearInterval(legIntervalId)
     ctx.font = "30px serif";
     ctx.textAlign = "center";
+    removeEventListener("keydown", keydownHandler)
+    removeEventListener("keyup", keyupHandler)
+    meniu("Restart")
     ctx.fillText("G a m e  O v e r", 350, 100);
-    setTimeout(() => {
-        addEventListener("keydown", restart)
-    }, 3000);
 }
 
-function restart() {
+function restart(event) {
     const canvas = document.getElementById("canvas")
     const ctx = canvas.getContext("2d")
-    removeEventListener("keydown", restart)
-    ctx.clearRect(0, 0, canvasWidth, canvasHeigh)
-    for (let i = 0; i < 50; ++i) {
-        obstacles[i] = new obstacle()
-        distanceBetweenObstacles[i] = Math.floor(Math.random() * (3 - 1) + 1)
+    if (event.offsetX < 450 && event.offsetX > 250 && event.offsetY < 350 && event.offsetY > 250) {
+        clearInterval(legIntervalId)
+        canvas.removeEventListener("click", restart)
+        ctx.clearRect(0, 0, canvasWidth, canvasHeigh)
+        for (let i = 0; i < 50; ++i) {
+            obstacles[i] = new obstacle()
+            distanceBetweenObstacles[i] = Math.floor(Math.random() * (3 - 1) + 1)
+        }
+        finish = 1
+        begin = 0
+        timeMeasure = null
+        lastTime = null
+        start = false
+        dinosaurRunner.y = landWalking
+        dinosaurRunner.draw(ctx)
+        ctx.lineWidth = 1
+        ctx.moveTo(0, ground)
+        ctx.lineTo(canvasWidth, ground)
+        ctx.stroke();
+        score = 0
+        dinosaurRunner.vy = jumpingSpeed
+        addEvent()
     }
-    finish = 1
-    begin = 0
-    timeMeasure = null
-    lastTime = null
-    start = false
-    dinosaurRunner.y = landWalking
-    dinosaurRunner.draw(ctx)
-    ctx.lineWidth = 1
-    ctx.moveTo(0, ground)
-    ctx.lineTo(canvasWidth, ground)
-    ctx.stroke();
-    score = 0
 }
