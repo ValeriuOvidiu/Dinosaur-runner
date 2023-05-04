@@ -104,7 +104,6 @@ function meniu(buttonValue) {
         ctx.fillText("Score: " + score, 350, 230)
         canvas.addEventListener("click", restart)
     }
-
 }
 
 function addEvent() {
